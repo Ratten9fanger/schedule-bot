@@ -93,7 +93,7 @@ dp = Dispatcher(bot)
 async def start(message: types.Message):
     global user_id
     user_id = message.from_user.id  # Сохраняем ID в глобальной переменной
-    await message.answer("Привет! Я - Бот расписания СКСиПТ\nЯ отправляю нужное вам расписание в 17:00 каждый день\nНо для начала, введите ссылку НЕДЕЛЬНОГО расписания вашей группы\nОна будет в будущем использоваться для взятия расписания и отправки вам, без передачи ссылки расписание приходить не БУДЕТ.\nУчтите, что ссылки меняются каждый семестр!\nПример: http://schedule.ckstr.ru/cg142.htm\n")
+    await message.answer("Привет! Я - Бот расписания СКСиПТ\nЯ отправляю нужное вам расписание в 17:30 каждый день\nНо для начала, введите ссылку НЕДЕЛЬНОГО расписания вашей группы\nОна будет в будущем использоваться для взятия расписания и отправки вам, без передачи ссылки расписание приходить не БУДЕТ.\nУчтите, что ссылки меняются каждый семестр!\nПример: http://schedule.ckstr.ru/cg142.htm\n")
     keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
     button_input = KeyboardButton("Ввести ссылку")
     button_get = KeyboardButton("Проверить ссылку")
@@ -121,7 +121,7 @@ async def get_url(message: types.Message):
 async def capture_url(message: types.Message):
     global url
     url = message.text  # Сохраняем URL в глобальной переменной
-    await message.reply("Ссылка сохранена! Теперь я буду отправлять вам расписание в 17:00 каждый день\nЕсли захотите поменять ее, то просто отправьте в чат новую и я автоматически сменю целевую ссылку")
+    await message.reply("Ссылка сохранена! Теперь я буду отправлять вам расписание в 17:30 каждый день\nЕсли захотите поменять ее, то просто отправьте в чат новую и я автоматически сменю целевую ссылку")
 
 
 async def send_message_at_time():
@@ -134,7 +134,7 @@ async def send_message_at_time():
         # Получите текущее время в Екатеринбурге
         now = datetime.now(ekaterinburg_tz)
         # Установите время, когда хотите отправить сообщение (например, каждый день в 10:00)
-        target_time = now.replace(hour=17, minute=0, second=0, microsecond=0)
+        target_time = now.replace(hour=17, minute=30, second=0, microsecond=0)
         
         # Если текущее время больше целевого, установите целевое время на следующий день
         if now > target_time:
