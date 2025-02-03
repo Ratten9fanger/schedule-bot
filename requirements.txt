@@ -1,4 +1,4 @@
 requests
 beautifulsoup4
-aiogram
+aiogram==2.23.1
 pytz    
