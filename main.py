@@ -84,9 +84,8 @@ def GetScheduleText(schedule_dict):
 
 url = ''
 user_id = ''
-PROXY_URL = 'https://13.59.156.167:3128'
 
-bot = Bot('7565630801:AAEJS3zZtetuZL2AW3Pit-QYz4ijVb9obuk', proxy=PROXY_URL)
+bot = Bot('7565630801:AAEJS3zZtetuZL2AW3Pit-QYz4ijVb9obuk')
 dp = Dispatcher(bot)
 
 
