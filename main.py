@@ -102,6 +102,45 @@ def GetScheduleText(schedule_dict):
 
 url = ''
 user_id = ''
+schedule_time = """
+I пара:
+  08:30 - 09:10
+  09:15 - 10:00
+II пара:
+  10:10 - 10:50
+  10:55 - 11:40
+  Обеденный перерыв 30 мин.
+III пара:
+  12:10 - 12:50
+  12:55 - 13:40
+IV пара:
+  13:50 - 14:30
+  14:35 - 15:20
+V пара:
+  15:30 - 16:50
+VI пара:
+  17:00 - 18:20
+
+Среда
+08:30 - 08:50 - Классный час
+І пара:
+  09:00 - 09:40
+  09:45 - 10:30
+II пара:
+  10:40 - 11:20
+  11:25 - 12:10
+  Обеденный перерыв 20 мин.
+III пара:
+  12:30 - 13:10
+  13:15 - 14:00
+IV пара:
+  14:10 - 14:50
+  14:55 - 15:40
+V пара:
+  15:50 - 17:10
+VI пара:
+  17:20 - 18:40
+"""
 
 bot = Bot('7565630801:AAEJS3zZtetuZL2AW3Pit-QYz4ijVb9obuk')
 dp = Dispatcher(bot)
@@ -110,6 +149,7 @@ dp = Dispatcher(bot)
 keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
 keyboard.add(KeyboardButton("Текущая ссылка"))
 keyboard.add(KeyboardButton("Получить текущее расписание форсированно"))
+keyboard.add(KeyboardButton("Расписание звонков"))
 
 @dp.message_handler(commands='start')
 async def start(message: types.Message):
@@ -136,6 +176,12 @@ async def show_current_url(message: types.Message):
         await message.answer(f"Текущая ссылка: {url}")
     else:
         await message.answer("Ссылка не установлена!")
+
+@dp.message_handler(lambda message: message.text == "Расписание звонков")
+async def show_current_url(message: types.Message):
+    await message.answer("Обрабатываю запрос... Подождите")
+    await asyncio.sleep(2)  # Задержка 5 секунд
+    await message.answer(text=schedule_time)
 
 @dp.message_handler(lambda message: message.text == "Получить текущее расписание форсированно")
 async def force_get_schedule(message: types.Message):
