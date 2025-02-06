@@ -156,7 +156,7 @@ async def send_message_at_time():
 
     while True:
         now = datetime.now(ekaterinburg_tz)
-        target_time = now.replace(hour=5, minute=35, second=0, microsecond=0)
+        target_time = now.replace(hour=17, minute=30, second=0, microsecond=0)
         
         if now > target_time:
             target_time += timedelta(days=1)
