@@ -102,6 +102,7 @@ def GetScheduleText(schedule_dict):
 
 url = ''
 user_id = ''
+user_data = {}
 schedule_time = """
 I пара:
   08:30 - 09:10
@@ -153,8 +154,8 @@ keyboard.add(KeyboardButton("Расписание звонков"))
 
 @dp.message_handler(commands='start')
 async def start(message: types.Message):
-    global user_id
     user_id = message.from_user.id
+    user_data[user_id] = {'url': ''}  # Инициализация данных пользователя
     await message.answer(
         "Привет! Я - Бот расписания СКСиПТ\nЯ отправляю нужное вам расписание в 17:30 каждый день\nНо для начала, введите ссылку НЕДЕЛЬНОГО расписания вашей группы\nОна будет в будущем использоваться для взятия расписания и отправки вам, без передачи ссылки расписание приходить не БУДЕТ.\nУчтите, что ссылки меняются каждый семестр!\nПример: http://schedule.ckstr.ru/cg142.htm\n\n<pre>Бот находится в beta-test версии и прекращает работу 20.02.25</pre>",
         reply_markup=keyboard, parse_mode='html'
@@ -162,18 +163,19 @@ async def start(message: types.Message):
 
 @dp.message_handler(lambda message: message.text.startswith('http://schedule.ckstr.ru/cg'))
 async def capture_url(message: types.Message):
-    global user_id
     user_id = message.from_user.id
-    global url
-    url = message.text
+    if user_id not in user_data:
+        user_data[user_id] = {'url': ''}
+    user_data[user_id]['url'] = message.text  # Сохраняем ссылку для конкретного пользователя
     await message.reply("Ссылка сохранена! Теперь я буду отправлять вам расписание в 17:30 каждый день\nЕсли захотите поменять ее, то просто отправьте в чат новую и я автоматически сменю целевую ссылку", reply_markup=keyboard)
 
 @dp.message_handler(lambda message: message.text == "Текущая ссылка")
 async def show_current_url(message: types.Message):
+    user_id = message.from_user.id
     await message.answer("Обрабатываю запрос... Подождите 5 секунд.")
-    await asyncio.sleep(5)  # Задержка 5 секунд
-    if url:
-        await message.answer(f"Текущая ссылка: {url}")
+    await asyncio.sleep(5)
+    if user_id in user_data and user_data[user_id]['url']:
+        await message.answer(f"Текущая ссылка: {user_data[user_id]['url']}")
     else:
         await message.answer("Ссылка не установлена!")
 
@@ -185,10 +187,11 @@ async def show_current_url(message: types.Message):
 
 @dp.message_handler(lambda message: message.text == "Получить текущее расписание форсированно")
 async def force_get_schedule(message: types.Message):
+    user_id = message.from_user.id
     await message.answer("Обрабатываю запрос... Подождите 5 секунд.")
-    await asyncio.sleep(5)  # Задержка 5 секунд
-    if url:
-        temp = GetScheduleDict(url)
+    await asyncio.sleep(5)
+    if user_id in user_data and user_data[user_id]['url']:
+        temp = GetScheduleDict(user_data[user_id]['url'])
         res = GetScheduleText(temp)
         await message.answer(text=res, parse_mode='html')
     else:
@@ -211,12 +214,11 @@ async def send_message_at_time():
         await asyncio.sleep(wait_time)
         
         if target_time.weekday() < 6:  # 0-4 — понедельник-пятница
-            if user_id:
-                temp = GetScheduleDict(url)
-                res = GetScheduleText(temp)
-                await bot.send_message(user_id, text=res, parse_mode='html', reply_markup=keyboard)
-            else:
-                print("user_id не установлен, сообщение не отправлено")
+            for user_id, data in user_data.items():
+                if data['url']:  # Проверяем, есть ли ссылка у пользователя
+                    temp = GetScheduleDict(data['url'])
+                    res = GetScheduleText(temp)
+                    await bot.send_message(user_id, text=res, parse_mode='html', reply_markup=keyboard)
 
 if __name__ == '__main__':
     executor.start_polling(dp, skip_updates=True, on_startup=on_startup)
